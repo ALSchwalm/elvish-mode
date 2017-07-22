@@ -9,7 +9,7 @@ used in the [Elvish][] shell.
 Installation
 ------------
 
-Insure that `elvish-mode.el` is in your load-path, and then add
+Ensure that `elvish-mode.el` is in your load-path, and then add
 
     (require 'elvish-mode)
 
