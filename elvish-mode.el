@@ -36,11 +36,9 @@
 
 (defvar elvish-mode-syntax-table
   (let ((table (make-syntax-table)))
-    ;; Words can contain '-', '_', ':' and '&'
-    (modify-syntax-entry ?- "w" table)
-    (modify-syntax-entry ?_ "w" table)
-    (modify-syntax-entry ?: "w" table)
-    (modify-syntax-entry ?& "w" table)
+
+    ;; Put '$' in punctuation table to avoid highlight
+    (modify-syntax-entry ?$ "." table)
 
     ;; Comments start with a '#' and end with a newline
     (modify-syntax-entry ?# "<" table)
@@ -57,18 +55,37 @@
   :type 'list
   :group 'elvish-mode)
 
+(defconst elvish-symbol '(one-or-more (or (syntax word) (syntax symbol)))
+  "An elvish symbol is a collection of words or symbol characters as
+determined by the syntax table. This allows us to keep things like '-'
+in the symbol part of the syntax table, so `forward-word' works as
+expected.")
+
 (defconst elvish-keyword-pattern
   (let ((keywords (cons 'or elvish-keywords)))
     (eval `(rx (group ,keywords) (not word))))
   "The regex to identify elvish keywords")
 
 (defconst elvish-function-pattern
-  (rx "fn" (one-or-more space) (group (one-or-more word)))
+  (rx "fn" (one-or-more space) (group (eval elvish-symbol)))
   "The regex to identify elvish function names")
 
-(defconst elvish-variable-pattern
-  (rx "$" (optional "@") (one-or-more word))
-  "The regex to identify elvish variables")
+(defconst elvish-variable-usage-pattern
+  (rx "$" (optional "@") (zero-or-more (eval elvish-symbol) ":")
+      (group (eval elvish-symbol)))
+  "The regex to identify variable usages")
+
+(defconst elvish-variable-declaration-pattern
+  ;; Elvish requires spaces around the equal for multiple assignment.
+  ;; For now, we require for single assignment as well (to avoid highlighting
+  ;; arguments, etc).
+  (rx (group (optional (one-or-more (eval elvish-symbol) (one-or-more space)))
+             (eval elvish-symbol)) (one-or-more space) "=" (one-or-more space))
+  "The regex to identify variable declarations")
+
+(defconst elvish-module-pattern
+  (rx (group (eval elvish-symbol)) ":" (eval elvish-symbol))
+  "The regex to identify elvish module prefixes")
 
 (defconst elvish-numeric-pattern
   (rx (optional "-") (one-or-more digit))
@@ -77,7 +94,9 @@
 (defconst elvish-highlights
   `((,elvish-function-pattern . (1 font-lock-function-name-face))
     (,elvish-keyword-pattern . (1 font-lock-keyword-face))
-    (,elvish-variable-pattern . font-lock-variable-name-face)
+    (,elvish-variable-usage-pattern . (1 font-lock-variable-name-face))
+    (,elvish-variable-declaration-pattern . (1 font-lock-variable-name-face))
+    (,elvish-module-pattern . (1 font-lock-constant-face))
     (,elvish-numeric-pattern . font-lock-constant-face)))
 
 (defcustom elvish-indent 2
