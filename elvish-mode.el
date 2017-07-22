@@ -87,8 +87,10 @@ expected.")
   (rx (group (eval elvish-symbol)) ":" (eval elvish-symbol))
   "The regex to identify elvish module prefixes")
 
+;;TODO: this doesn't support everything ParseFloat does (scientific notation, etc)
 (defconst elvish-numeric-pattern
-  (rx (optional "-") (one-or-more digit))
+  (rx (optional "-") (one-or-more digit)
+      (optional "." (optional (one-or-more digit))))
   "The regex to identify elvish numbers")
 
 (defconst elvish-highlights
