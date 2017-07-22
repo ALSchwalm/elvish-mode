@@ -50,7 +50,7 @@
 
 (defcustom elvish-keywords
   '("fn" "elif" "if" "else" "try" "except" "finally" "use" "return"
-    "while" "for" "break" "continue")
+    "while" "for" "break" "continue" "del" "and" "or")
   "Elvish keyword list"
   :type 'list
   :group 'elvish-mode)
@@ -63,7 +63,7 @@ expected.")
 
 (defconst elvish-keyword-pattern
   (let ((keywords (cons 'or elvish-keywords)))
-    (eval `(rx (group ,keywords) (not word))))
+    (eval `(rx (not (any word ?_ ?-)) (group ,keywords) (not (any word ?_ ?-)))))
   "The regex to identify elvish keywords")
 
 (defconst elvish-function-pattern
@@ -74,6 +74,17 @@ expected.")
   (rx "$" (optional "@") (zero-or-more (eval elvish-symbol) ":")
       (group (eval elvish-symbol)))
   "The regex to identify variable usages")
+
+(defcustom elvish-auto-variables
+  '("_" "pid" "ok" "true" "false" "paths" "pwd")
+  "Elvish special variable names"
+  :type 'list
+  :group 'elvish-mode)
+
+(defconst elvish-auto-variables-pattern
+  (let ((vars (cons 'or elvish-auto-variables)))
+    (eval `(rx "$" (group ,vars) (not (any word ?_ ?-)))))
+  "Regex to identify Elvish special variables")
 
 (defconst elvish-variable-declaration-pattern
   ;; Elvish requires spaces around the equal for multiple assignment.
@@ -93,8 +104,80 @@ expected.")
       (optional "." (optional (one-or-more digit))))
   "The regex to identify elvish numbers")
 
+(defcustom elvish-builtin-functions
+  '(
+    ;; Trivial builtin
+    "nop"
+    ;; Introspection
+    "kind-of" "is" "eq"
+    ;; Value output
+    "put"
+    ;; Bytes output
+    "print" "echo" "pprint" "repr"
+    ;; Bytes to value
+    "slurp" "from-lines" "from-json"
+    ;; Value to bytes
+    "to-lines" "to-json"
+    ;; Exception and control
+    "fail" "multi-error" "return" "break" "continue"
+    ;; Misc functional
+    "constantly"
+    ;; Misc shell basic
+    "-source"
+    ;; Iterations.
+    "each" "peach" "repeat"
+    ;; Container primitives.
+    "assoc"
+    ;; Sequence primitives
+    "explode" "take" "range" "count" "has-key" "has-value"
+    ;; String
+    "joins" "splits"
+    ;; String operations
+    "ord" "base" "wcswidth" "-override-wcwidth"
+    ;; Map operations
+    "keys"
+    ;; String predicates
+    "has-prefix" "has-suffix"
+    ;; String comparison
+    "<s" "<=s" "==s" "!=s" ">s" ">=s"
+    ;; eawk
+    "eawk"
+    ;; Directory
+    "cd" "dir-history"
+    ;; Path
+    "path-abs" "path-base" "path-clean" "path-dir" "path-ext" "eval-symlinks" "tilde-abbr"
+    ;; Boolean operations
+    "bool" "not"
+    ;; Arithmetics
+    "+" "-" "*" "/" "^" "%"
+    ;; Random
+    "rand" "randint"
+    ;; Numerical comparison
+    "<" "<=" "==" "!=" ">" ">="
+    ;; Command resolution
+    "resolve" "has-external" "search-external"
+    ;; File and pipe
+    "fopen" "fclose" "pipe" "prclose" "pwclose"
+    ;; Process control
+    "fg" "exec" "exit"
+    ;; Time
+    "esleep" "-time"
+    ;; Debugging
+    "-gc" "-stack" "-log" "-ifaddrs"
+    )
+  "List of Elvish built-in functions"
+  :type 'list
+  :group 'elvish-mode)
+
+(defconst elvish-builtin-functions-pattern
+  (let ((builtins (cons 'or elvish-builtin-functions)))
+    (eval `(rx (not (any word ?_ ?-))(group ,builtins) (not (any word ?_ ?-)))))
+  "The regex to identify builtin Elvish functions")
+
 (defconst elvish-highlights
   `((,elvish-function-pattern . (1 font-lock-function-name-face))
+    (,elvish-builtin-functions-pattern . (1 font-lock-builtin-face))
+    (,elvish-auto-variables-pattern . (1 font-lock-constant-face))
     (,elvish-keyword-pattern . (1 font-lock-keyword-face))
     (,elvish-variable-usage-pattern . (1 font-lock-variable-name-face))
     (,elvish-variable-declaration-pattern . (1 font-lock-variable-name-face))
