@@ -95,7 +95,7 @@ expected.")
   "The regex to identify variable declarations")
 
 (defconst elvish-module-pattern
-  (rx (group (eval elvish-symbol)) ":" (eval elvish-symbol))
+  (rx (group (eval elvish-symbol)) ":" symbol-start)
   "The regex to identify elvish module prefixes")
 
 ;;TODO: this doesn't support everything ParseFloat does (scientific notation, etc)
