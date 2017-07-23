@@ -75,6 +75,10 @@ expected.")
       (group (eval elvish-symbol)) symbol-end)
   "The regex to identify variable usages")
 
+(defconst elvish-map-key-pattern
+  (rx "&" (group (eval elvish-symbol)) "=")
+  "The regex to identify map keys")
+
 (defcustom elvish-auto-variables
   '("_" "pid" "ok" "true" "false" "paths" "pwd")
   "Elvish special variable names"
@@ -180,6 +184,7 @@ expected.")
     (,elvish-auto-variables-pattern . (1 font-lock-constant-face))
     (,elvish-keyword-pattern . (1 font-lock-keyword-face))
     (,elvish-variable-usage-pattern . (1 font-lock-variable-name-face))
+    (,elvish-map-key-pattern . (1 font-lock-constant-face))
     (,elvish-variable-declaration-pattern . (1 font-lock-variable-name-face))
     (,elvish-module-pattern . (1 font-lock-constant-face))
     (,elvish-numeric-pattern . font-lock-constant-face)))
