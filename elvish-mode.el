@@ -50,7 +50,7 @@
 
 (defcustom elvish-keywords
   '("fn" "elif" "if" "else" "try" "except" "finally" "use" "return"
-    "while" "for" "break" "continue" "del" "and" "or")
+    "while" "for" "break" "continue" "del" "and" "or" "fail" "multi-error")
   "Elvish keyword list"
   :type 'list
   :group 'elvish-mode)
@@ -63,16 +63,16 @@ expected.")
 
 (defconst elvish-keyword-pattern
   (let ((keywords (cons 'or elvish-keywords)))
-    (eval `(rx (not (any word ?_ ?-)) (group ,keywords) (not (any word ?_ ?-)))))
+    (eval `(rx symbol-start (group ,keywords) symbol-end)))
   "The regex to identify elvish keywords")
 
 (defconst elvish-function-pattern
-  (rx "fn" (one-or-more space) (group (eval elvish-symbol)))
+  (rx "fn" (one-or-more space) (group (eval elvish-symbol)) symbol-end)
   "The regex to identify elvish function names")
 
 (defconst elvish-variable-usage-pattern
   (rx "$" (optional "@") (zero-or-more (eval elvish-symbol) ":")
-      (group (eval elvish-symbol)))
+      (group (eval elvish-symbol)) symbol-end)
   "The regex to identify variable usages")
 
 (defcustom elvish-auto-variables
@@ -83,7 +83,7 @@ expected.")
 
 (defconst elvish-auto-variables-pattern
   (let ((vars (cons 'or elvish-auto-variables)))
-    (eval `(rx "$" (group ,vars) (not (any word ?_ ?-)))))
+    (eval `(rx "$" (group ,vars) symbol-end)))
   "Regex to identify Elvish special variables")
 
 (defconst elvish-variable-declaration-pattern
@@ -118,8 +118,6 @@ expected.")
     "slurp" "from-lines" "from-json"
     ;; Value to bytes
     "to-lines" "to-json"
-    ;; Exception and control
-    "fail" "multi-error" "return" "break" "continue"
     ;; Misc functional
     "constantly"
     ;; Misc shell basic
@@ -148,12 +146,14 @@ expected.")
     "path-abs" "path-base" "path-clean" "path-dir" "path-ext" "eval-symlinks" "tilde-abbr"
     ;; Boolean operations
     "bool" "not"
-    ;; Arithmetics
-    "+" "-" "*" "/" "^" "%"
+    ;; Arithmetics - omitted for now to avoid spurioius highlighting
+    ;; "+" "-" "*" "/" "^" "%"
     ;; Random
     "rand" "randint"
     ;; Numerical comparison
-    "<" "<=" "==" "!=" ">" ">="
+    ;; Less-and-greater than omitted for now to avoid spurioius highlighting in redirections
+    ;; "<" ">"
+    "<=" "==" "!=" ">="
     ;; Command resolution
     "resolve" "has-external" "search-external"
     ;; File and pipe
@@ -171,7 +171,7 @@ expected.")
 
 (defconst elvish-builtin-functions-pattern
   (let ((builtins (cons 'or elvish-builtin-functions)))
-    (eval `(rx (not (any word ?_ ?-))(group ,builtins) (not (any word ?_ ?-)))))
+    (eval `(rx symbol-start (group ,builtins) symbol-end)))
   "The regex to identify builtin Elvish functions")
 
 (defconst elvish-highlights
