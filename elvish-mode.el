@@ -100,8 +100,10 @@ expected.")
 
 ;;TODO: this doesn't support everything ParseFloat does (scientific notation, etc)
 (defconst elvish-numeric-pattern
-  (rx (optional "-") (one-or-more digit)
-      (optional "." (optional (one-or-more digit))))
+  (rx symbol-start
+      (optional "-") (one-or-more digit)
+      (optional "." (zero-or-more digit))
+      symbol-end)
   "The regex to identify elvish numbers")
 
 (defcustom elvish-builtin-functions
