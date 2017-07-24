@@ -61,9 +61,12 @@ determined by the syntax table. This allows us to keep things like '-'
 in the symbol part of the syntax table, so `forward-word' works as
 expected.")
 
+(defconst elvish-start-of-statement '(sequence (or line-start "(" ";" "|") (zero-or-more space))
+  "Regex to match the beginning of an Elvish statement (where a command or keyword can appear)")
+
 (defconst elvish-keyword-pattern
   (let ((keywords (cons 'or elvish-keywords)))
-    (eval `(rx symbol-start (group ,keywords) symbol-end)))
+    (eval `(rx ,elvish-start-of-statement (group ,keywords) symbol-end)))
   "The regex to identify elvish keywords")
 
 (defconst elvish-function-pattern
@@ -152,14 +155,12 @@ expected.")
     "path-abs" "path-base" "path-clean" "path-dir" "path-ext" "eval-symlinks" "tilde-abbr"
     ;; Boolean operations
     "bool" "not"
-    ;; Arithmetics - omitted for now to avoid spurioius highlighting
-    ;; "+" "-" "*" "/" "^" "%"
+    ;; Arithmetics
+    "+" "-" "*" "/" "^" "%"
     ;; Random
     "rand" "randint"
     ;; Numerical comparison
-    ;; Less-and-greater than omitted for now to avoid spurioius highlighting in redirections
-    ;; "<" ">"
-    "<=" "==" "!=" ">="
+    "<" ">" "<=" "==" "!=" ">="
     ;; Command resolution
     "resolve" "has-external" "search-external"
     ;; File and pipe
@@ -177,7 +178,7 @@ expected.")
 
 (defconst elvish-builtin-functions-pattern
   (let ((builtins (cons 'or elvish-builtin-functions)))
-    (eval `(rx symbol-start (group ,builtins) symbol-end)))
+    (eval `(rx ,elvish-start-of-statement (group ,builtins) symbol-end)))
   "The regex to identify builtin Elvish functions")
 
 (defconst elvish-highlights
