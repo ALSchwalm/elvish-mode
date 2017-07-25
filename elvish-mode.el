@@ -66,7 +66,7 @@ expected.")
 
 (defconst elvish-keyword-pattern
   (let ((keywords (cons 'or elvish-keywords)))
-    (eval `(rx ,elvish-start-of-statement (group ,keywords) symbol-end)))
+    (eval `(rx symbol-start (group ,keywords) symbol-end)))
   "The regex to identify elvish keywords")
 
 (defconst elvish-function-pattern
