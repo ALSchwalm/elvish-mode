@@ -5,6 +5,7 @@
 ;; Author: Adam Schwalm <adamschwalm@gmail.com>
 ;; Version: 0.1.0
 ;; URL: https://github.com/ALSchwalm/elvish-mode
+;; Package-Requires: ((emacs "24.3"))
 
 ;; This program is free software: you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -70,16 +71,16 @@ expected.")
   "The regex to identify elvish keywords")
 
 (defconst elvish-function-pattern
-  (rx "fn" (one-or-more space) (group (eval elvish-symbol)) symbol-end)
+  (eval `(rx "fn" (one-or-more space) (group ,elvish-symbol) symbol-end))
   "The regex to identify elvish function names")
 
 (defconst elvish-variable-usage-pattern
-  (rx "$" (optional "@") (zero-or-more (eval elvish-symbol) ":")
-      (group (eval elvish-symbol)) symbol-end)
+  (eval `(rx "$" (optional "@") (zero-or-more ,elvish-symbol ":")
+             (group ,elvish-symbol) symbol-end))
   "The regex to identify variable usages")
 
 (defconst elvish-map-key-pattern
-  (rx "&" (group (eval elvish-symbol)) "=")
+  (eval `(rx "&" (group ,elvish-symbol) "="))
   "The regex to identify map keys")
 
 (defcustom elvish-auto-variables
@@ -97,12 +98,12 @@ expected.")
   ;; Elvish requires spaces around the equal for multiple assignment.
   ;; For now, we require for single assignment as well (to avoid highlighting
   ;; arguments, etc).
-  (rx (group (optional (one-or-more (eval elvish-symbol) (one-or-more space)))
-             (eval elvish-symbol)) (one-or-more space) "=" (one-or-more space))
+  (eval `(rx (group (optional (one-or-more ,elvish-symbol (one-or-more space)))
+                    ,elvish-symbol) (one-or-more space) "=" (one-or-more space)))
   "The regex to identify variable declarations")
 
 (defconst elvish-module-pattern
-  (rx (group (eval elvish-symbol)) ":" symbol-start)
+  (eval `(rx (group ,elvish-symbol) ":" symbol-start))
   "The regex to identify elvish module prefixes")
 
 ;;TODO: this doesn't support everything ParseFloat does (scientific notation, etc)
