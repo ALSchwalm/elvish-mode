@@ -27,7 +27,7 @@
 ;;; Code:
 
 (defgroup elvish-mode nil
-  "A mode for elvish"
+  "A mode for Elvish"
   :prefix "elvish-mode-"
   :group 'applications)
 
@@ -52,47 +52,48 @@
 (defcustom elvish-keywords
   '("fn" "elif" "if" "else" "try" "except" "finally" "use" "return"
     "while" "for" "break" "continue" "del" "and" "or" "fail" "multi-error")
-  "Elvish keyword list"
+  "Elvish keyword list."
   :type 'list
   :group 'elvish-mode)
 
 (defconst elvish-symbol '(one-or-more (or (syntax word) (syntax symbol)))
-  "An elvish symbol is a collection of words or symbol characters as
-determined by the syntax table. This allows us to keep things like '-'
-in the symbol part of the syntax table, so `forward-word' works as
-expected.")
+  "The regex to identify an Elvish symbol.
+An Elvish symbol is a collection of words or symbol characters as
+determined by the syntax table.  This allows us to keep things
+like '-' in the symbol part of the syntax table, so
+`forward-word' works as expected.")
 
 (defconst elvish-start-of-statement '(sequence (or line-start "(" ";" "|") (zero-or-more space))
-  "Regex to match the beginning of an Elvish statement (where a command or keyword can appear)")
+  "Regex to match the beginning of an Elvish statement (where a command or function can appear).")
 
 (defconst elvish-keyword-pattern
   (let ((keywords (cons 'or elvish-keywords)))
     (eval `(rx symbol-start (group ,keywords) symbol-end)))
-  "The regex to identify elvish keywords")
+  "The regex to identify Elvish keywords.")
 
 (defconst elvish-function-pattern
   (eval `(rx "fn" (one-or-more space) (group ,elvish-symbol) symbol-end))
-  "The regex to identify elvish function names")
+  "The regex to identify Elvish function names.")
 
 (defconst elvish-variable-usage-pattern
   (eval `(rx "$" (optional "@") (zero-or-more ,elvish-symbol ":")
              (group ,elvish-symbol) symbol-end))
-  "The regex to identify variable usages")
+  "The regex to identify variable usages.")
 
 (defconst elvish-map-key-pattern
   (eval `(rx "&" (group ,elvish-symbol) "="))
-  "The regex to identify map keys")
+  "The regex to identify map keys.")
 
 (defcustom elvish-auto-variables
   '("_" "pid" "ok" "true" "false" "paths" "pwd")
-  "Elvish special variable names"
+  "Elvish special variable names."
   :type 'list
   :group 'elvish-mode)
 
 (defconst elvish-auto-variables-pattern
   (let ((vars (cons 'or elvish-auto-variables)))
     (eval `(rx "$" (group ,vars) symbol-end)))
-  "Regex to identify Elvish special variables")
+  "Regex to identify Elvish special variables.")
 
 (defconst elvish-variable-declaration-pattern
   ;; Elvish requires spaces around the equal for multiple assignment.
@@ -100,11 +101,11 @@ expected.")
   ;; arguments, etc).
   (eval `(rx (group (optional (one-or-more ,elvish-symbol (one-or-more space)))
                     ,elvish-symbol) (one-or-more space) "=" (one-or-more space)))
-  "The regex to identify variable declarations")
+  "The regex to identify variable declarations.")
 
 (defconst elvish-module-pattern
   (eval `(rx (group ,elvish-symbol) ":" symbol-start))
-  "The regex to identify elvish module prefixes")
+  "The regex to identify Elvish module prefixes.")
 
 ;;TODO: this doesn't support everything ParseFloat does (scientific notation, etc)
 (defconst elvish-numeric-pattern
@@ -112,7 +113,7 @@ expected.")
       (optional "-") (one-or-more digit)
       (optional "." (zero-or-more digit))
       symbol-end)
-  "The regex to identify elvish numbers")
+  "The regex to identify Elvish numbers.")
 
 (defcustom elvish-builtin-functions
   '(
@@ -173,14 +174,14 @@ expected.")
     ;; Debugging
     "-gc" "-stack" "-log" "-ifaddrs"
     )
-  "List of Elvish built-in functions"
+  "List of Elvish built-in functions."
   :type 'list
   :group 'elvish-mode)
 
 (defconst elvish-builtin-functions-pattern
   (let ((builtins (cons 'or elvish-builtin-functions)))
     (eval `(rx ,elvish-start-of-statement (group ,builtins) symbol-end)))
-  "The regex to identify builtin Elvish functions")
+  "The regex to identify builtin Elvish functions.")
 
 (defconst elvish-highlights
   `((,elvish-function-pattern . (1 font-lock-function-name-face))
@@ -194,16 +195,18 @@ expected.")
     (,elvish-numeric-pattern . font-lock-constant-face)))
 
 (defcustom elvish-indent 2
-  "The number of spaces to add per indentation level"
+  "The number of spaces to add per indentation level."
   :type 'integer
   :group 'elvish-mode)
 
 (defun elvish-current-line-empty-p ()
- (save-excursion
-   (beginning-of-line)
-   (looking-at (rx (zero-or-more space) eol))))
+  "Determine if the current line is empty."
+  (save-excursion
+    (beginning-of-line)
+    (looking-at (rx (zero-or-more space) eol))))
 
 (defun elvish-lowest-indent-in-line ()
+  "Determine the lowest indentation in the current line."
   (save-excursion
     (beginning-of-line)
     (let ((lowest (car (syntax-ppss)))
@@ -218,14 +221,14 @@ expected.")
 
 (defun elvish-indent-function ()
   "This function is normally the value of 'indent-line-function' in Elvish.
-The indent is currently calculated via 'syntax-ppss'. Once the grammar is more
+The indent is currently calculated via 'syntax-ppss'.  Once the grammar is more
 stable, this should probably be switched to using SMIE."
   (indent-line-to (* elvish-indent (elvish-lowest-indent-in-line)))
   (if (elvish-current-line-empty-p)
       (end-of-line)))
 
 (define-derived-mode elvish-mode fundamental-mode "elvish"
-  "Major mode for the elvish language"
+  "Major mode for the Elvish language"
   :syntax-table elvish-mode-syntax-table
   (setq-local font-lock-defaults '(elvish-highlights))
   (setq-local indent-line-function #'elvish-indent-function)
