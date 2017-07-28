@@ -27,7 +27,7 @@
 ;;; Code:
 
 (defgroup elvish-mode nil
-  "A mode for elvish"
+  "A mode for Elvish"
   :prefix "elvish-mode-"
   :group 'applications)
 
@@ -57,9 +57,9 @@
   :group 'elvish-mode)
 
 (defconst elvish-symbol '(one-or-more (or (syntax word) (syntax symbol)))
-  "Regex representation of an elvish symbol.
-An elvish symbol is a collection of words or symbol characters as determined by
-the syntax table. This allows us to keep things like '-' in the symbol part of
+  "Regex representation of an Elvish symbol.
+An Elvish symbol is a collection of words or symbol characters as determined by
+the syntax table.  This allows us to keep things like '-' in the symbol part of
 the syntax table, so `forward-word' works as expected.")
 
 (defconst elvish-start-of-statement '(sequence (or line-start "(" ";" "|") (zero-or-more space))
@@ -68,7 +68,7 @@ the syntax table, so `forward-word' works as expected.")
 (defconst elvish-keyword-pattern
   (let ((keywords (cons 'or elvish-keywords)))
     (eval `(rx symbol-start (group ,keywords) symbol-end)))
-  "The regex to identify elvish keywords.")
+  "The regex to identify Elvish keywords.")
 
 (defconst elvish-function-pattern
   (eval `(rx "fn" (one-or-more space) (group ,elvish-symbol) symbol-end))
@@ -104,7 +104,7 @@ the syntax table, so `forward-word' works as expected.")
 
 (defconst elvish-module-pattern
   (eval `(rx (group ,elvish-symbol) ":" symbol-start))
-  "The regex to identify elvish module prefixes.")
+  "The regex to identify Elvish module prefixes.")
 
 ;;TODO: this doesn't support everything ParseFloat does (scientific notation, etc)
 (defconst elvish-numeric-pattern
@@ -112,7 +112,7 @@ the syntax table, so `forward-word' works as expected.")
       (optional "-") (one-or-more digit)
       (optional "." (zero-or-more digit))
       symbol-end)
-  "The regex to identify elvish numbers.")
+  "The regex to identify Elvish numbers.")
 
 (defcustom elvish-builtin-functions
   '(
@@ -198,7 +198,7 @@ the syntax table, so `forward-word' works as expected.")
   :group 'elvish-mode)
 
 (defun elvish-current-line-empty-p ()
-  "Tests whether the current line contains only whitespace."
+  "Test whether the current line contains only whitespace."
   (save-excursion
     (beginning-of-line)
     (looking-at (rx (zero-or-more space) eol))))
@@ -219,14 +219,14 @@ the syntax table, so `forward-word' works as expected.")
 
 (defun elvish-indent-function ()
   "This function is normally the value of 'indent-line-function' in Elvish.
-The indent is currently calculated via 'syntax-ppss'. Once the grammar is more
+The indent is currently calculated via 'syntax-ppss'.  Once the grammar is more
 stable, this should probably be switched to using SMIE."
   (indent-line-to (* elvish-indent (elvish-lowest-indent-in-line)))
   (if (elvish-current-line-empty-p)
       (end-of-line)))
 
 (define-derived-mode elvish-mode fundamental-mode "elvish"
-  "Major mode for the elvish language"
+  "Major mode for the Elvish language"
   :syntax-table elvish-mode-syntax-table
   (setq-local font-lock-defaults '(elvish-highlights))
   (setq-local indent-line-function #'elvish-indent-function)
