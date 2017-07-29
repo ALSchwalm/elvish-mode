@@ -29,11 +29,7 @@
 (defgroup elvish-mode nil
   "A mode for elvish"
   :prefix "elvish-mode-"
-  :group 'applications)
-
-(defvar elvish-mode-map
-  (let ((map (make-keymap)))
-    map))
+  :group 'languages)
 
 (defvar elvish-mode-syntax-table
   (let ((table (make-syntax-table)))
@@ -225,7 +221,8 @@ stable, this should probably be switched to using SMIE."
   (if (elvish-current-line-empty-p)
       (end-of-line)))
 
-(define-derived-mode elvish-mode fundamental-mode "elvish"
+;;;###autoload
+(define-derived-mode elvish-mode prog-mode "elvish"
   "Major mode for the elvish language"
   :syntax-table elvish-mode-syntax-table
   (setq-local font-lock-defaults '(elvish-highlights))
