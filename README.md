@@ -9,9 +9,12 @@ used in the [Elvish][] shell.
 Installation
 ------------
 
-Ensure that `elvish-mode.el` is in your load-path, and then add
+`elvish-mode` is available from the MELPA. Install from there or otherwise
+ensure that `elvish-mode.el` is in your load-path, and then add
 
     (require 'elvish-mode)
+
+to your emacs init file.
 
 [Elvish]: http://elvish.io
 [badge-license]: https://img.shields.io/badge/license-GPL_3-green.svg?dummy
