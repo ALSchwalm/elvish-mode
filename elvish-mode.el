@@ -62,7 +62,7 @@ An elvish symbol is a collection of words or symbol characters as determined by
 the syntax table. This allows us to keep things like '-' in the symbol part of
 the syntax table, so `forward-word' works as expected.")
 
-(defconst elvish-start-of-statement '(sequence (or line-start "(" ";" "|") (zero-or-more space))
+(defconst elvish-start-of-statement '(sequence (or line-start "{" "(" ";" "|") (zero-or-more space))
   "Regex to match the beginning of an Elvish statement.")
 
 (defconst elvish-keyword-pattern
