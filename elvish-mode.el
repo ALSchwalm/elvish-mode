@@ -34,9 +34,6 @@
 (defvar elvish-mode-syntax-table
   (let ((table (make-syntax-table)))
 
-    ;; Put '$' in punctuation table to avoid highlight
-    (modify-syntax-entry ?$ "." table)
-
     ;; Comments start with a '#' and end with a newline
     (modify-syntax-entry ?# "<" table)
     (modify-syntax-entry ?\n ">" table)
