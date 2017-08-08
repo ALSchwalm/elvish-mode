@@ -34,6 +34,9 @@
 (defvar elvish-mode-syntax-table
   (let ((table (make-syntax-table)))
 
+    ;; Don't consider the '&' as part of a symbol
+    (modify-syntax-entry ?& "." table)
+
     ;; Comments start with a '#' and end with a newline
     (modify-syntax-entry ?# "<" table)
     (modify-syntax-entry ?\n ">" table)
@@ -94,6 +97,23 @@ the syntax table, so `forward-word' works as expected.")
   (eval `(rx (group (optional (one-or-more ,elvish-symbol (one-or-more space)))
                     ,elvish-symbol) (one-or-more space) "=" (one-or-more space)))
   "The regex to identify variable declarations.")
+
+(defconst elvish-argument-declaration-pattern
+  (eval `(rx "["
+             (zero-or-more space)
+
+             ;; 1st group is the normal arguments
+             (group (zero-or-more ,elvish-symbol (zero-or-more space)))
+
+             ;; Skip the optional arguments. They will be highlighted
+             ;; by `elvish-map-key-pattern'.
+             (optional (zero-or-more "&" ,elvish-symbol "=" (one-or-more (not space))
+                                     (zero-or-more space)))
+
+             ;; 2nd group is the (optional) 'rest argument'
+             (optional "@" (group ,elvish-symbol))
+             (zero-or-more space) "]{"))
+  "The regex to identify function arguments.")
 
 (defconst elvish-module-pattern
   (eval `(rx (group ,elvish-symbol) ":" symbol-start))
@@ -181,6 +201,8 @@ the syntax table, so `forward-word' works as expected.")
     (,elvish-keyword-pattern . (1 font-lock-keyword-face))
     (,elvish-variable-usage-pattern . (1 font-lock-variable-name-face))
     (,elvish-map-key-pattern . (1 font-lock-variable-name-face))
+    (,elvish-argument-declaration-pattern . ((1 font-lock-variable-name-face)
+                                             (2 font-lock-variable-name-face nil lax)))
     (,elvish-variable-declaration-pattern . (1 font-lock-variable-name-face))
     (,elvish-module-pattern . (1 font-lock-constant-face))
     (,elvish-numeric-pattern . font-lock-constant-face)))
