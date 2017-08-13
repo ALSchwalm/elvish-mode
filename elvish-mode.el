@@ -132,7 +132,7 @@ the syntax table, so `forward-word' works as expected.")
     ;; Trivial builtin
     "nop"
     ;; Introspection
-    "kind-of" "is" "eq"
+    "kind-of" "is" "eq" "not-eq"
     ;; Value output
     "put"
     ;; Bytes output
@@ -152,7 +152,7 @@ the syntax table, so `forward-word' works as expected.")
     ;; Sequence primitives
     "explode" "take" "range" "count" "has-key" "has-value"
     ;; String
-    "joins" "splits"
+    "joins" "splits" "replaces"
     ;; String operations
     "ord" "base" "wcswidth" "-override-wcwidth"
     ;; Map operations
