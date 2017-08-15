@@ -150,7 +150,7 @@ the syntax table, so `forward-word' works as expected.")
     ;; Container primitives.
     "assoc"
     ;; Sequence primitives
-    "explode" "take" "range" "count" "has-key" "has-value"
+    "explode" "take" "drop" "range" "count" "has-key" "has-value"
     ;; String
     "joins" "splits" "replaces"
     ;; String operations
