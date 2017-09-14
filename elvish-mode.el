@@ -103,7 +103,10 @@ the syntax table, so `forward-word' works as expected.")
              (zero-or-more space)
 
              ;; 1st group is the normal arguments
-             (group (zero-or-more ,elvish-symbol (zero-or-more space)))
+             (group (optional ,elvish-symbol (zero-or-more (one-or-more space)
+                                                           ,elvish-symbol)))
+
+             (zero-or-more space)
 
              ;; Skip the optional arguments. They will be highlighted
              ;; by `elvish-map-key-pattern'.
