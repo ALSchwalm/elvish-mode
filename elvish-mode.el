@@ -250,12 +250,7 @@ stable, this should probably be switched to using SMIE."
   (setq-local font-lock-defaults '(elvish-highlights))
   (setq-local indent-line-function #'elvish-indent-function)
   (setq-local comment-start "#")
-  (setq-local comment-end "")
-
-  ;; Make electric-indent mode consider close curly brackets
-  (setq-local electric-indent-chars
-              (cons ?} (and (boundp 'electric-indent-chars)
-                            electric-indent-chars))))
+  (setq-local comment-end ""))
 
 ;;;###autoload
 (add-to-list 'auto-mode-alist '("\\.elv\\'" . elvish-mode))
