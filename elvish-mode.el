@@ -239,9 +239,13 @@ the syntax table, so `forward-word' works as expected.")
   "This function is normally the value of 'indent-line-function' in Elvish.
 The indent is currently calculated via 'syntax-ppss'.  Once the grammar is more
 stable, this should probably be switched to using SMIE."
-  (indent-line-to (* elvish-indent (elvish-lowest-indent-in-line)))
-  (if (elvish-current-line-empty-p)
-      (end-of-line)))
+  (save-excursion
+    (indent-line-to (* elvish-indent (elvish-lowest-indent-in-line))))
+  (if (< (current-column)
+	 (save-excursion
+	   (back-to-indentation)
+	   (current-column)))
+      (back-to-indentation)))
 
 ;;;###autoload
 (define-derived-mode elvish-mode prog-mode "elvish"
